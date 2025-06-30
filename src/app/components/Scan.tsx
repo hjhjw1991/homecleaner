@@ -1,5 +1,6 @@
 'use client';
 import React, { ReactNode, useState, useRef } from 'react';
+import PhotoEditor from './PhotoEditor';
 interface ScanProps {
     content: ReactNode;
 }
@@ -35,6 +36,7 @@ export default function Scan(props: ScanProps) {
         
         const dataUrl = canvasRef.current.toDataURL('image/jpeg');
         setPhotoData(dataUrl);
+        handleCapture(dataUrl);
         
         if (linkRef.current) {
             linkRef.current.download = 'photo.jpg';
@@ -43,13 +45,37 @@ export default function Scan(props: ScanProps) {
         }
     };
 
+    // 在现有代码中添加状态和编辑处理逻辑
+    const [capturedImage, setCapturedImage] = React.useState<string>("");
+    const [isEditing, setIsEditing] = React.useState(false);
+    
+    // 拍照后
+    const handleCapture = (imageSrc: string) => {
+      setCapturedImage(imageSrc);
+      setIsEditing(true);
+    };
+    
+    // 保存编辑后的图片
+    const handleSaveEditedImage = (editedImage: string) => {
+      // TODO 处理保存逻辑
+      setIsEditing(false);
+    };
+    
+    // 在render中添加
+    {isEditing && (
+      <PhotoEditor 
+        image={capturedImage}
+        onSave={handleSaveEditedImage}
+        onCancel={() => setIsEditing(false)}
+      />
+    )}
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 p-4">
             <video
                 ref={videoRef}
                 autoPlay
                 playsInline
-                className="w-full max-w-[400px] aspect-video bg-gray-100 rounded-lg"
+                className="w-full max-w-full md:max-w-[400px] aspect-video bg-gray-100 rounded-lg"
             />
             
             {!stream ? (
@@ -63,7 +89,7 @@ export default function Scan(props: ScanProps) {
                 <div className="flex gap-4">
                     <button
                         onClick={capturePhoto}
-                        className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-green-600 text-white gap-2 hover:bg-green-700 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+                        className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-green-600 text-white gap-2 hover:bg-green-700 font-medium text-base md:text-lg h-12 md:h-14 px-5 md:px-6"
                     >
                         拍照
                     </button>
