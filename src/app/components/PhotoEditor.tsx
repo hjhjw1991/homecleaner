@@ -1,6 +1,8 @@
 'use client';
 import React from 'react';
 
+import { useEffect } from 'react';
+
 type Tool = 'text' | 'pen' | 'arrow' | 'rectangle';
 
 type Annotation = {
@@ -29,6 +31,20 @@ type AILabel = {
 
 // 修改组件定义
 export default function PhotoEditor({ image, onSave, onCancel }: PhotoEditorProps) {
+
+  useEffect(() => {
+    const setupVConsole = async () => {
+      // 仅在开发环境初始化vConsole
+      if (process.env.NODE_ENV === 'development') {
+        const VConsole = (await import('vconsole')).default
+        new VConsole();
+      } else {
+        // 生产环境中，移除vConsole
+      }
+    }
+    setupVConsole();
+  }, []);
+
   const [annotations, setAnnotations] = React.useState<Annotation[]>([]);
   const [aiAnnotations, setAIAnnotations] = React.useState<AILabel[]>([]); // 新增状态
   const [activeTool, setActiveTool] = React.useState<Tool>('text');
