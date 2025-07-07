@@ -5,7 +5,7 @@ import Scan from './Scan';
 
 describe('Scan Component', () => {
   it('test runner', () => {
-    render(<p>Hello Testor</p>); // can't use <text> tag here, because it is supposed to be used only in SVG context
+    render(<p>Hello Tester</p>); // can't use <text> tag here, because it is supposed to be used only in SVG context
     expect(screen.getByText('Hello Testor')).toBeInTheDocument();
   });
   it('renders content correctly', () => {

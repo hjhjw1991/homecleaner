@@ -298,3 +298,43 @@ export async function POST(request) {
 5. 实现渐进式Web应用(PWA)特性，支持添加到主屏幕
 
 这个架构设计充分利用了NextJS的App Router和客户端存储能力，采用了模块化组织方式，便于团队协作开发和后续功能扩展。需要根据实际业务需求进一步细化和调整。
+
+// 修改tasks存储结构
+db.createObjectStore('tasks', {
+  keyPath: 'id',
+  autoIncrement: true
+}).createIndex('status_index', 'status'); // 新增状态索引
+
+// 示例任务数据结构
+{
+  id: 1,
+  title: '厨房清洁',
+  status: '进行中', // 新增状态字段
+  priority: 'high',
+  created: '2024-03-20T08:00:00Z',
+  deadline: '2024-03-20T12:00:00Z'
+}
+
+### 安全增强设计
+
+1. **数据加密流程**：
+   - 使用Web Crypto API生成AES-GCM密钥
+   - 存储前对图像数据进行加密
+   - 元数据单独加密存储
+
+2. **权限管理**：
+   ```javascript
+   // 相机权限申请示例
+   const requestCamera = async () => {
+     try {
+       const stream = await navigator.mediaDevices.getUserMedia({
+         video: {
+           facingMode: 'environment',
+           width: { ideal: 1280 } // 限制分辨率
+         }
+       });
+       showPermissionExplanation('camera'); // 显示权限说明
+     } catch (err) {
+       handlePermissionError(err);
+     }
+   }}
