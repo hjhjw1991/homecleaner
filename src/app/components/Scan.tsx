@@ -1,11 +1,35 @@
 'use client';
-import React, { ReactNode, useState, useRef } from 'react';
+import React, { ReactNode, useState, useRef, useEffect } from 'react';
 import PhotoEditor from './PhotoEditor';
 interface ScanProps {
     content: ReactNode;
 }
 
 export default function Scan(props: ScanProps) {
+
+    // 初始化vConsole
+    useEffect(() => {
+        const setupVConsole = async () => {
+            // 增加开发环境判断日志
+            console.log('当前环境:', process.env.NODE_ENV);
+
+            if (process.env.NODE_ENV === 'development') {
+                try {
+                    const VConsole = (await import('vconsole')).default;
+                    new VConsole({
+                        onReady: () => console.log('vConsole 初始化完成'),
+                        onClearLog: () => console.log('日志被清除')
+                    });
+                    // 增加测试日志
+                    console.log('vConsole 已激活');
+                } catch (e) {
+                    console.error('vConsole 加载失败:', e);
+                }
+            }
+        };
+        setupVConsole();
+    }, []);
+
     const videoRef = useRef<HTMLVideoElement>(null);
     const [stream, setStream] = useState<MediaStream>();
     const [photoData, setPhotoData] = useState<string>();
@@ -33,11 +57,11 @@ export default function Scan(props: ScanProps) {
         canvasRef.current.width = videoRef.current.videoWidth;
         canvasRef.current.height = videoRef.current.videoHeight;
         canvasRef.current.getContext('2d')?.drawImage(videoRef.current, 0, 0);
-        
+
         const dataUrl = canvasRef.current.toDataURL('image/jpeg');
         setPhotoData(dataUrl);
         handleCapture(dataUrl);
-        
+
         if (linkRef.current) {
             linkRef.current.download = 'photo.jpg';
             linkRef.current.href = dataUrl;
@@ -45,30 +69,31 @@ export default function Scan(props: ScanProps) {
         }
     };
 
+    // 在组件卸载时关闭摄像头
+    useEffect(() => {
+        return () => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        };
+    }, [stream]);
+
     // 在现有代码中添加状态和编辑处理逻辑
     const [capturedImage, setCapturedImage] = React.useState<string>("");
     const [isEditing, setIsEditing] = React.useState(false);
-    
+
     // 拍照后
     const handleCapture = (imageSrc: string) => {
       setCapturedImage(imageSrc);
       setIsEditing(true);
     };
-    
+
     // 保存编辑后的图片
     const handleSaveEditedImage = (editedImage: string) => {
       // TODO 处理保存逻辑
       setIsEditing(false);
     };
-    
-    // 在render中添加
-    {isEditing && (
-      <PhotoEditor 
-        image={capturedImage}
-        onSave={handleSaveEditedImage}
-        onCancel={() => setIsEditing(false)}
-      />
-    )}
+
     return (
         <div className="flex flex-col gap-4 p-4">
             <video
@@ -77,9 +102,17 @@ export default function Scan(props: ScanProps) {
                 playsInline
                 className="w-full max-w-full md:max-w-[400px] aspect-video bg-gray-100 rounded-lg"
             />
-            
+
+            {isEditing && (
+                <PhotoEditor
+                    image={capturedImage}
+                    onSave={handleSaveEditedImage}
+                    onCancel={() => setIsEditing(false)}
+                />
+            )}
+
             {!stream ? (
-                <button 
+                <button
                     onClick={startCamera}
                     className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
                 >

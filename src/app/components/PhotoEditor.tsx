@@ -32,19 +32,6 @@ type AILabel = {
 // 修改组件定义
 export default function PhotoEditor({ image, onSave, onCancel }: PhotoEditorProps) {
 
-  useEffect(() => {
-    const setupVConsole = async () => {
-      // 仅在开发环境初始化vConsole
-      if (process.env.NODE_ENV === 'development') {
-        const VConsole = (await import('vconsole')).default
-        new VConsole();
-      } else {
-        // 生产环境中，移除vConsole
-      }
-    }
-    setupVConsole();
-  }, []);
-
   const [annotations, setAnnotations] = React.useState<Annotation[]>([]);
   const [aiAnnotations, setAIAnnotations] = React.useState<AILabel[]>([]); // 新增状态
   const [activeTool, setActiveTool] = React.useState<Tool>('text');
@@ -134,6 +121,7 @@ export default function PhotoEditor({ image, onSave, onCancel }: PhotoEditorProp
         })}
       </div>
 
+      {/* 修改操作按钮 */}
       <div className="action-buttons">
         <button onClick={onCancel}>取消</button>
         <button onClick={() => onSave(image)}>保存</button>
