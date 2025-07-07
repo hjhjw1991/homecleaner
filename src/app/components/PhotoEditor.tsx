@@ -63,10 +63,16 @@ export default function PhotoEditor({ image, onSave, onCancel }: PhotoEditorProp
   // ...
 
   // 在渲染部分修改
+  // 修改背景和文字颜色
   return (
-    <div className="editor-container fixed inset-0 bg-black bg-opacity-80 z-50 p-4 md:p-8">
-      <div className="toolbar flex flex-wrap gap-2 p-2 bg-gray-800 rounded-lg mb-4">
-        <button onClick={() => setActiveTool('text')}>文字</button>
+    <div className="editor-container fixed inset-0 bg-white z-50 p-4 md:p-8"> {/* 修改背景为白色 */}
+      <div className="toolbar flex flex-wrap gap-2 p-2 bg-gray-100 rounded-lg mb-4 shadow-md"> {/* 修改工具栏背景为浅灰色 */}
+        <button
+          onClick={() => setActiveTool('text')}
+          className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600" // 新增按钮样式
+        >
+          文字
+        </button>
         <button onClick={() => setActiveTool('pen')}>画笔</button>
         <button onClick={() => setActiveTool('arrow')}>箭头</button>
         <button onClick={() => setActiveTool('rectangle')}>矩形</button>
@@ -74,7 +80,7 @@ export default function PhotoEditor({ image, onSave, onCancel }: PhotoEditorProp
         <select
           value={color}
           onChange={(e) => setColor(e.target.value as 'black' | 'white' | 'red' | 'green')}
-          className="p-2 border rounded bg-gray-700 text-white"
+          className="p-2 border rounded bg-white text-gray-800" // 修改选择框样式
         >
           <option value="black">黑色</option>
           <option value="white">白色</option>
@@ -123,8 +129,12 @@ export default function PhotoEditor({ image, onSave, onCancel }: PhotoEditorProp
 
       {/* 修改操作按钮 */}
       <div className="action-buttons">
-        <button onClick={onCancel}>取消</button>
-        <button onClick={() => onSave(image)}>保存</button>
+        <button
+            className="rounded-full border border-solid border-gray-300 transition-colors flex items-center justify-center bg-red-600 text-white gap-2 hover:bg-red-700 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+            onClick={onCancel}>取消</button>
+        <button
+            className="rounded-full border border-solid border-gray-300 transition-colors flex items-center justify-center bg-blue-600 text-white gap-2 hover:bg-blue-700 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+            onClick={() => onSave(image)}>保存</button>
       </div>
     </div>
   )
